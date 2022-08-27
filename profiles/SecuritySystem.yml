@@ -1,0 +1,36 @@
+name: AlarmComSecuritySystem.v1
+components:
+  - id: main
+    capabilities:
+      - id: securitySystem
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: SecurityPanel
+preferences:
+  - preferenceId: username
+    explicit: true  
+  - preferenceId: password
+    explicit: true
+  - title: "Silent Arming"
+    name: silent
+    description: "Arm alarm silently"
+    required: false
+    preferenceType: boolean
+    definition: 
+      default: true
+  - title: "No Entry Delay"
+    name: nodelay
+    description: "Arm alarm with no entry delay"
+    required: false
+    preferenceType: boolean
+    definition: 
+      default: false
+  - title: "Bypass sensors"
+    name: bypass
+    description: "Arm bypass open sensors"
+    required: false
+    preferenceType: boolean
+    definition: 
+      default: false
