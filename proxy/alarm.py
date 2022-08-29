@@ -16,7 +16,7 @@ class AlarmDotCom:
     SYSTEM_KEY = "systemkey"
     PANEL_KEY = "panelid"
     STATES = ['disarm', 'armStay', 'armAway']
-    SESSION_TIMEOUT = 100
+    SESSION_TIMEOUT = 300
     
     def __init__(self) -> None:
         self.browser = Browser()
