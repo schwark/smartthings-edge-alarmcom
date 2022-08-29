@@ -56,13 +56,25 @@ class AlarmComService(object):
     def disarm(self):
         return {'status': self.panel.disarm()}
 
+def get_ip():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        try:
+            # doesn't even have to be reachable
+            s.connect(('8.8.8.8', 80))
+            IP = s.getsockname()[0]
+        except Exception:
+            IP = '127.0.0.1'
+        finally:
+            s.close()
+        return IP
 
 def start_cherry():
     cherrypy.server.socket_host = '0.0.0.0'
     cherrypy.quickstart(AlarmComService())    
 
 def start_ssdp():
-    server = SSDPServer("uuid:de8a5619-2603-40d1-9e21-1967952d7f86", device_type="urn:SmartThingsCommunity:device:AlarmComProxy:1", location='http://'+socket.gethostbyname(socket.gethostname())+':'+str(cherrypy.server.socket_port)+'/')
+    server = SSDPServer("uuid:de8a5619-2603-40d1-9e21-1967952d7f86", device_type="urn:SmartThingsCommunity:device:AlarmComProxy:1", location='http://'+get_ip()+':'+str(cherrypy.server.socket_port)+'/')
     server.serve_forever()
         
 
