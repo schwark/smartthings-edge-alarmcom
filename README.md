@@ -13,6 +13,7 @@ The rest of this README is instructions on how to get the proxy based integratio
 
 ```
 sudo ufw allow 8080    # if you have ufw enabled on the raspberrypi
+cd <directory-where-you-copied-code>
 pip install -r requirements.txt
 python server.py --setup
 ```
@@ -20,9 +21,15 @@ python server.py --setup
 This last step will ask you to enter the following
 
 ```
-Keyring Passphrase:  <enter a passphrase to encrypt storage of your password> (need to type every time startup)
-Alarm.com username:  <enter your alarm.com username> (asked only once, stored encrypted with above passphrase)
-Alarm.com password:  <enter your alarm.com password> (asked only once, stored encrypted with above passphrase)
+Keyring Passphrase:  
+<enter a passphrase to encrypt storage of your password> 
+(REMEMBER THIS - need to type every time startup)
+
+Alarm.com username:  
+<enter your alarm.com username> (asked only once, stored encrypted with above passphrase)
+
+Alarm.com password:  
+<enter your alarm.com password> (asked only once, stored encrypted with above passphrase)
 
 <wait for 30s to a couple of mins (especially on raspberrypi) till you see something like this below...>
 
@@ -35,7 +42,9 @@ Alarm.com password:  <enter your alarm.com password> (asked only once, stored en
 
 4. Exit the app
 
-5. Go back to the raspberrypi and stop execution of the `python server.py --setup` program
+5. Go back to the raspberrypi and stop execution of the `python server.py --setup` program - `Ctrl-C` should do it
+
+6. Now run the following commands
 
 ```
 supervisord -c supervisord.conf
@@ -48,11 +57,11 @@ Keyring Passphrase:  <enter the passphrase created the first time>
 <Ctrl-C> 
 ```
 
-6. You should be all set!
+7. You should be all set!
 
 The **Alarm.com Panel** device in SmartThings app has 3 settings in the Settings section of the device that control Silent Arming, Forcing Bypass of open sensors, and arming with a No Entry Delay
 
-The panel can also be operated like a switch - turning it on put the alarm in ArmStay mode, and turning it off disarms the alarm.
+The panel can also be operated like a switch - turning it on puts the alarm in ArmStay mode, and turning it off disarms the alarm.
 
 
 
