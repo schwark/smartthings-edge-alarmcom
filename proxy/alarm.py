@@ -138,6 +138,7 @@ class AlarmDotCom:
             'refresh': {'method': 'GET', 'urlext': '', 'resultfunc': lambda x: states[int(x['data']['attributes']['state'])-1], 'json': None}
         }
         args = {'method': commands[command]['method'], 'json': commands[command]['json']}
+        log.info('params are '+str(args['json']))
         json = self.authenticated_json(url_base+commands[command]['urlext'], **(args))
         if json:
             result = commands[command]['resultfunc'](json)

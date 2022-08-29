@@ -40,6 +40,7 @@ local function handle_command(driver, device, command, type)
         if device.preferences.nodelay then
             params.nodelay = true
         end
+        log.info("params are "..dump.table_to_string(params))
         local success = panel[type](panel,params)
         if success then            
             device:emit_event(capabilities.securitySystem.securitySystemStatus[switch_states[type].security]())
