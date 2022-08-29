@@ -16,7 +16,7 @@ class AlarmDotCom:
     SYSTEM_KEY = "systemkey"
     PANEL_KEY = "panelid"
     STATES = ['disarm', 'armStay', 'armAway']
-    SESSION_TIMEOUT = 300
+    SESSION_TIMEOUT = 360
     
     def __init__(self) -> None:
         self.browser = Browser()
@@ -100,20 +100,24 @@ class AlarmDotCom:
     
     def authenticated_json(self, url, **kwargs):
         result = None
-        authenticated =  self.last_request and (time() - self.last_request) < self.SESSION_TIMEOUT
-        if(not authenticated):
-            authenticated = self.login()
-        if(authenticated):
-            json_headers = {'Accept': 'application/vnd.api+json', 'AjaxRequestUniqueKey': self.afg, 'Referer': 'https://www.alarm.com/web/system/'}
-            headers = {}
-            if 'headers' in kwargs and kwargs['headers']:
-                headers = kwargs['headers']
-            headers = {**headers, **json_headers}
-            kwargs['headers'] = headers
-            response = self.browser.request(url, **kwargs)
-            if(200 == response.status_code):
-                result = response.json()
-                self.last_request = time()
+        for i in [1,2]:
+            authenticated =  self.last_request and (time() - self.last_request) < self.SESSION_TIMEOUT
+            if(not authenticated):
+                authenticated = self.login()
+            if(authenticated):
+                json_headers = {'Accept': 'application/vnd.api+json', 'AjaxRequestUniqueKey': self.afg, 'Referer': 'https://www.alarm.com/web/system/'}
+                headers = {}
+                if 'headers' in kwargs and kwargs['headers']:
+                    headers = kwargs['headers']
+                headers = {**headers, **json_headers}
+                kwargs['headers'] = headers
+                response = self.browser.request(url, **kwargs)
+                if(200 == response.status_code):
+                    result = response.json()
+                    self.last_request = time()
+                    break
+                if(403 == response.status_code):
+                    self.last_request = None
         return result
     
     def command(self, command, flags={}):
