@@ -1,5 +1,4 @@
-# smartthings-edge-alarmcom
-SmartThings Alarm.com integration via local Proxy
+# SmartThings Alarm.com integration via local Proxy
 
 This repo contains 
 
