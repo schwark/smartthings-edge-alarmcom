@@ -31,7 +31,7 @@ local function handle_command(driver, device, command, type)
     local panel = assert(command_handlers.get_panel(device))
     if panel then
         local params = {}
-        if command.args.bypassAll or device.preferences.bypass then
+        if device.preferences.bypass then
             params.bypass = true
         end
         if device.preferences.silent then

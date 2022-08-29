@@ -37,7 +37,7 @@ function M:command(command, params)
     response, code = browser:request({ url = self.base..command, method="POST", params = flags, headers = headers} )                
     if(200 == code and "table" == type(response)) then
         result = response.status            
-        log.info(command.." got response status result "..result)
+        log.info(command.." got response status result "..tostring(result))
     else
         log.error(command.." request failed with error code "..code)
     end
