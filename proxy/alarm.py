@@ -24,7 +24,7 @@ class AlarmDotCom:
         self.user_id = keyring.get_password(self.SERVICE_ID, self.USER_KEY)
         self.system_id = keyring.get_password(self.SERVICE_ID, self.SYSTEM_KEY)
         self.panel_id = keyring.get_password(self.SERVICE_ID, self.PANEL_KEY)
-        self.afg = keyring.get_password(self.SERVICE_ID, self.AFG_KEY)
+        self.afg = None
         self.last_request = None
                     
     def update_state(self):
@@ -33,7 +33,6 @@ class AlarmDotCom:
             afg = cookies['afg']
             if(afg and self.afg != afg):
                 self.afg = afg
-                keyring.set_password(self.SERVICE_ID, self.AFG_KEY, afg)            
         
     def set_panel_id(self, panel_id):
         if(panel_id):
