@@ -28,6 +28,7 @@ class AlarmDotCom:
         self.password = keyring.get_password(self.SERVICE_ID, self.PASSWORD_KEY)
         self.afg = None
         self.last_request = None
+        self.update()
                     
     def update_state(self):
         cookies = requests.utils.dict_from_cookiejar(self.browser.session.cookies)
