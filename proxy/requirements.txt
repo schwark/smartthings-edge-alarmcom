@@ -28,6 +28,7 @@ pytz==2022.2.1
 requests==2.28.1
 six==1.16.0
 ssdpy==0.4.1
+supervisor==4.2.4
 tempora==5.0.2
 typing_extensions==4.3.0
 urllib3==1.26.12
