@@ -17,11 +17,13 @@ end
 setmetatable(M, {__call = constructor})
 
 function M:command(command, params)
+    local result = nil
     local params = params or {}
-    local response, code, headers
+    local response, code
     local browser = self.browser
     log.info("executing "..command)
     local flags = {}
+    local headers = {}
     headers['content-type'] = 'application/json'
     if params.bypass then
         flags["bypass"] = true
@@ -32,8 +34,14 @@ function M:command(command, params)
     if params.nodelay then
         flags["nodelay"] = true
     end
-    response, code = browser:request({ url = self.base..command, method="POST", params = flags} )                
-    return code
+    response, code = browser:request({ url = self.base..command, method="POST", params = flags, headers = headers} )                
+    if(200 == code and "table" == type(response)) then
+        result = response.status            
+        log.info(command.." got response status result "..result)
+    else
+        log.error(command.." request failed with error code "..code)
+    end
+    return result
 end
 
 function M:armStay(params)

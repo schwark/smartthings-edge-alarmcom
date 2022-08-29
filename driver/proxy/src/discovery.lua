@@ -5,9 +5,10 @@ local discovery = {}
 
 -- SSDP Response parser
 local function parse_ssdp(data)
+  log.info("ssdp response:\n"..data)
   local res = {}
   res.status = data:sub(0, data:find('\r\n'))
-  for k, v in data:gmatch('([%w-]+): ([%a+-: /=]+)') do
+  for k, v in data:gmatch('([%w-]+):[%s]-([%w+-:%. /=]+)') do
     res[k:lower()] = v
   end
   return res
@@ -63,7 +64,7 @@ function discovery.start(driver, opts, cons)
       device_res = parse_ssdp(device_res)
       log.info('===== DEVICE FOUND IN NETWORK...')
       log.info('===== DEVICE DESCRIPTION AT: '..device_res.location)
-      local ip_port = device_res.location.gmatch('http://([^/]+)')
+      local ip_port = device_res.location:match('http://([^/]+)')
 
       local device = {location = ip_port, name ='Alarm.com Panel', manufacturer = 'Alarm.com', model = 'Alarm.com Proxy', label = device_res.usn}
       return create_device(driver, device)

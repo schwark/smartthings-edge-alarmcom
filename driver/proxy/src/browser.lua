@@ -1,5 +1,5 @@
 local cosock = require "cosock"
-local https = cosock.asyncify 'ssl.https'
+local https = cosock.asyncify 'socket.http'
 local ltn12 = require "ltn12"
 local json = require("st.json")
 local log = require("log")
@@ -157,9 +157,6 @@ function M:request(args)
         local response_list = {}
         local result, rheaders, status
         log.info(method .. " " .. url)
-        log.info(dump.table_to_string(params), "params")
-        log.info(dump.table_to_string(headers), "headers")
-        log.info(dump.table_to_string(self.jar), "cookies")
         result, code, rheaders, status = https.request {
             url = url,
             method = method, 
@@ -179,7 +176,9 @@ function M:request(args)
             else
                 if response_list then
                     if rheaders['content-type']:match('json')  then
-                        response = json:decode(temp_response)
+                        log.info("decoding json response "..temp_response)
+                        response = json.decode(temp_response)
+                        log.info("got json object "..json.encode(response))
                     else
                         self.referer = url
                         response = temp_response

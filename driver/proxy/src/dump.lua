@@ -8,7 +8,7 @@ local function constructor(self,o)
 end
 setmetatable(M, {__call = constructor})
 
-function M:table_to_string(node)
+function M.table_to_string(node)
     if not node then
         return ""
     end
@@ -99,7 +99,7 @@ function M:debug(msg,func)
         if func ~= "" then
             print(func .. ":")
         end
-        print(self:table_to_string(msg))
+        print(M.table_to_string(msg))
     else
         print(func .. ": " .. msg)
     end
