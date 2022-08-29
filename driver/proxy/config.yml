@@ -1,0 +1,5 @@
+name: "Alarm.com Proxy based Security System"
+packageKey: "Alarm-com-Proxy-Security-System"
+permissions:
+  lan: {}
+  discovery: {}
