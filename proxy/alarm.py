@@ -21,8 +21,8 @@ class AlarmDotCom:
     def __init__(self) -> None:
         self.browser = Browser()
         self.reload = False
-        self.user_id = keyring.get_password(self.SERVICE_ID, self.USER_KEY)
-        self.system_id = keyring.get_password(self.SERVICE_ID, self.SYSTEM_KEY)
+        self.user_id = None
+        self.system_id = None
         self.panel_id = keyring.get_password(self.SERVICE_ID, self.PANEL_KEY)
         self.username = keyring.get_password(self.SERVICE_ID, self.USERNAME_KEY)
         self.password = keyring.get_password(self.SERVICE_ID, self.PASSWORD_KEY)
