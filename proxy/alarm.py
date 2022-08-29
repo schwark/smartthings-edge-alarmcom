@@ -24,6 +24,8 @@ class AlarmDotCom:
         self.user_id = keyring.get_password(self.SERVICE_ID, self.USER_KEY)
         self.system_id = keyring.get_password(self.SERVICE_ID, self.SYSTEM_KEY)
         self.panel_id = keyring.get_password(self.SERVICE_ID, self.PANEL_KEY)
+        self.username = keyring.get_password(self.SERVICE_ID, self.USERNAME_KEY)
+        self.password = keyring.get_password(self.SERVICE_ID, self.PASSWORD_KEY)
         self.afg = None
         self.last_request = None
                     
@@ -68,9 +70,7 @@ class AlarmDotCom:
             
     def login(self):
         response = None
-        username = keyring.get_password(self.SERVICE_ID, self.USERNAME_KEY)
-        password = keyring.get_password(self.SERVICE_ID, self.PASSWORD_KEY)
-        if(username and password):
+        if(self.username and self.password):
             params = {
                 '__PREVIOUSPAGE' : '',
 			  	'__VIEWSTATE' : '',
@@ -79,8 +79,8 @@ class AlarmDotCom:
 			  	'IsFromNewSite' : '1',
 			  	'JavaScriptTest' :  '1',
 			  	'ctl00$ContentPlaceHolder1$loginform$hidLoginID' : '',
-				'ctl00$ContentPlaceHolder1$loginform$txtUserName': username,
-			  	'txtPassword' : password,
+				'ctl00$ContentPlaceHolder1$loginform$txtUserName': self.username,
+			  	'txtPassword' : self.password,
 			  	'ctl00$ContentPlaceHolder1$loginform$signInButton': 'Login'
             }
             response = self.browser.request("https://www.alarm.com/login.aspx")
