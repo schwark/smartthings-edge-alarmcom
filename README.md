@@ -20,7 +20,7 @@ sudo apt-get install python3
 
 **On a Windows machine**
 
-Download from [Python Download] (https://www.python.org/downloads/) page and install
+Download from [Python Download](https://www.python.org/downloads/) page and install
 
 ## Proxy Installation
 
