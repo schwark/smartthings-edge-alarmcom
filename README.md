@@ -12,7 +12,9 @@ The rest of this README is instructions on how to get the proxy based integratio
 
 ## Proxy Installation
 
-Copy the `src/proxy` directory on the raspberypi anywhere
+Download this code repo as a zip file 
+
+Copy the `proxy` directory of inside downloaded zip file on the raspberypi anywhere
 
 ```
 sudo ufw allow 8080    # if you have ufw enabled on the raspberrypi
