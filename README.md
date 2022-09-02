@@ -57,7 +57,7 @@ ENGINE Bus STARTED
 
 ## Driver Installation
 
-1. Click on [Driver Invite Link] (https://bestow-regional.api.smartthings.com/invite/VD2NLgQwpNj5)
+1. Click on [Driver Invite Link](https://bestow-regional.api.smartthings.com/invite/VD2NLgQwpNj5)
 2. Login to your SmartThings Account
 3. Follow the flow to Accept Terms
 4. Enroll your Hub
