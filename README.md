@@ -6,9 +6,21 @@ a) direct implementation of the Alarm.com integration which does not work today 
 
 b) proxy based alarm.com integration that requires a proxy server that needs to be run somewhere in the same network as your SmartThings hub. It is written in python so can run anywhere python runs, but a raspberrypi is usually a good place to do it - so I am going to say raspberrypi in the README below, but you can host in anywhere including maybe your synology NAS, etc.
 
-If you have a Mac that is on all the time, that works too. Mac's already have python installed as well.
-
 The rest of this README is instructions on how to get the proxy based integration working
+
+## Python Installation
+
+**On a Mac, raspberry pi, or other Linux machine**
+
+Nothing needed - your machine already has python. If by any chance it does not
+
+```
+sudo apt-get install python3
+```
+
+**On a Windows machine**
+
+Download from [Python Download] (https://www.python.org/downloads/) page and install
 
 ## Proxy Installation
 
