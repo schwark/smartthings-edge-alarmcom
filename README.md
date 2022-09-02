@@ -10,27 +10,42 @@ The rest of this README is instructions on how to get the proxy based integratio
 
 ## Python Installation
 
-**On a Mac, raspberry pi, or other Linux machine**
+**On a raspberry pi, or other Linux machine**
 
 Nothing needed - your machine already has python. If by any chance it does not
 
 ```
 sudo apt-get install python3
+
+python3 -m ensurepip --upgrade
+```
+
+**On a Mac** 
+```
+# try to see if you already have python - python or python3 should be found, if not do the following
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install python
+
+python3 -m ensurepip --upgrade
 ```
 
 **On a Windows machine**
 
-Download from [Python Download](https://www.python.org/downloads/) page and install
+Download from [Python Download](https://www.python.org/downloads/) page and install and then run 
+
+```
+python3 -m ensurepip --upgrade
+```
 
 ## Proxy Installation
 
 Download this code repo as a zip file 
 
-Copy the `proxy` directory of inside downloaded zip file on the raspberypi anywhere
+Copy the `proxy` directory (not the one inside drivers directory) of inside downloaded zip file on the raspberypi anywhere
 
 ```
 sudo ufw allow 8080    # if you have ufw enabled on the raspberrypi
-cd <directory-where-you-copied-code>
+cd <proxy-directory--wherever-you-copied it>
 pip install -r requirements.txt
 supervisord -c supervisord.conf
 supervisorctl update
