@@ -46,7 +46,7 @@ Copy the `proxy` directory (not the one inside drivers directory) of inside down
 ```
 sudo ufw allow 8080    # if you have ufw enabled on the raspberrypi
 cd <proxy-directory--wherever-you-copied it>
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 supervisord -c supervisord.conf
 supervisorctl update
 <wait 1 s>
