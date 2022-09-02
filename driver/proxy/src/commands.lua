@@ -1,7 +1,8 @@
 local log = require "log"
 local capabilities = require "st.capabilities"
 local Alarm = require("alarm")
-local dump = require("dump")
+local utils = require("st.utils")
+local discovery = require("discovery")
 
 local command_handlers = {}
 
@@ -14,12 +15,15 @@ local switch_states = {
 function command_handlers.get_panel(device)
     local panel = device:get_field("panel")
     if not panel then
-        log.info("initializing panel with "..device.device_network_id)
-        panel = Alarm({location = device.device_network_id})            
-        if panel then
-            device:set_field("panel", panel)
-        else
-            log.error("unable to initialize panel")
+        local ip_port = discovery.get_device_details()
+        if ip_port ~= nil then
+            log.info("initializing panel with "..ip_port)
+            panel = Alarm({location = ip_port})            
+            if panel then
+                device:set_field("panel", panel)
+            else
+                log.error("unable to initialize panel")
+            end
         end
     end
     return panel
@@ -40,7 +44,7 @@ local function handle_command(driver, device, command, type)
         if device.preferences.nodelay then
             params.nodelay = true
         end
-        log.info("params are "..dump.table_to_string(params))
+        log.debug("params are "..utils.stringify_table(params))
         local success = panel[type](panel,params)
         if success then            
             device:emit_event(capabilities.securitySystem.securitySystemStatus[switch_states[type].security]())

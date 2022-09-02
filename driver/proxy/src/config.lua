@@ -5,6 +5,7 @@ local config = {}
 -- Workspace to avoid hardcoded values.
 config.DEVICE_PROFILE='AlarmComSecuritySystem.vP'
 config.DEVICE_TYPE='LAN'
+config.URN='urn:SmartThingsCommunity:device:AlarmComProxy:1'
 -- SSDP Config
 config.MC_ADDRESS='239.255.255.250'
 config.MC_PORT=1900
@@ -14,7 +15,7 @@ config.MSEARCH=table.concat({
   'HOST: 239.255.255.250:1900',
   'MAN: "ssdp:discover"',
   'MX: 4',
-  'ST: urn:SmartThingsCommunity:device:AlarmComProxy:1'
+  'ST: '..config.URN
 }, '\r\n')
 config.SCHEDULE_PERIOD=300
 return config

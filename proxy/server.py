@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", help="force update credentials",
                         action="store_true")
-    parser.add_argument("--setup", help="setup mode - starts ssdp server",
+    parser.add_argument("--nossdp", help="does not start ssdp server",
                         action="store_true")
     args = parser.parse_args()
     
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             keyring.set_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.PASSWORD_KEY, password)
 
     threads = [threading.Thread(target=start_cherry)]
-    if(args.setup):
+    if(not args.nossdp):
         threads.append(threading.Thread(target=start_ssdp))
 
     for th in threads:
