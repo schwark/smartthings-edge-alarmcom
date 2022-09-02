@@ -63,6 +63,7 @@ ENGINE Bus STARTED
 4. Enroll your Hub
 5. Install the Driver you want from the Available Drivers Button
 
+
 ## App Configuration
 
 1. Now go to your SmartThings app and **Add a Device** > **Scan Nearby**.
@@ -72,7 +73,3 @@ ENGINE Bus STARTED
 The **Alarm.com Panel** device in SmartThings app has 3 settings in the Settings section of the device that control Silent Arming, Forcing Bypass of open sensors, and arming with a No Entry Delay
 
 The panel can also be operated like a switch - turning it on puts the alarm in ArmStay mode, and turning it off disarms the alarm.
-
-
-
-
