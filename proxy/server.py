@@ -13,7 +13,7 @@ requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 ssdpy_log = logging.getLogger("ssdpy.server")
-ssdpy_log.setLevel(logging.INFO)
+ssdpy_log.setLevel(logging.WARNING)
 ssdpy_log.propagate = True
 
 
