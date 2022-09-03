@@ -44,7 +44,7 @@ Download this code repo as a zip file
 Copy the `proxy` directory (not the one inside drivers directory) of inside downloaded zip file on the raspberypi anywhere
 
 ```
-sudo ufw allow 8080    # if you have ufw enabled on the raspberrypi
+sudo ufw allow 8080    # only if you have ufw enabled on the raspberrypi
 cd <proxy-directory--wherever-you-copied it>
 pip3 install -r requirements.txt
 supervisord -c supervisord.conf

@@ -3,7 +3,6 @@ local https = cosock.asyncify 'socket.http'
 local ltn12 = require "ltn12"
 local json = require("st.json")
 local log = require("log")
-local dump = require("dump")
 
 local function interp(s, tab)
     return (s:gsub('%%%((%a%w*)%)([-0-9%.]*[cdeEfgGiouxXsq])',
