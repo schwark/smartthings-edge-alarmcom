@@ -18,6 +18,8 @@ local function constructor(self,o)
     o.state = o.state or {}
     o.agent = o.agent or "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
     o.referer = nil
+    o.proxy = o.proxy or nil
+    o.proxy_domains = { ['www.alarm.com'] = '1' }
     setmetatable(o, M)
     return o
 end
@@ -67,6 +69,12 @@ local function make_cookies(cookies)
     return result
 end
 
+function M:set_proxy(proxy)
+    if proxy and "" ~= proxy then
+        self.proxy = proxy
+    end
+end
+
 function M:add_cookies(cookies)
     if not cookies then
         return
@@ -100,14 +108,35 @@ local function extract_vars(vars, response)
     return vars
 end
 
-local function make_absolute(base, url)
-    local result = base
-    local protocol, domain, path = base:match('(https?)://([^/]+)(.*)')
-    if '/' == url:sub(1,1) then
-        result = protocol..'://'..domain..url
-    else
-        result = base:gsub('[^/]*$',url)
+function M:make_proxy_url(url)
+    local result = url
+    if self.proxy and not url.match(self.proxy) then
+        local protocol, domain, path = url:match('(https?)://([^/]+)(.*)')
+        local domain_prefix = self.proxy_domains[domain]
+        if domain_prefix then
+            result = 'http://'..self.proxy..'/'..domain_prefix..'/'..path
+        end
     end
+    log.debug("proxy url for "..url.." is "..result)
+    return result
+end
+
+function M:make_absolute(base_url, url)
+    local result = url
+    if not url:match('^http') then -- not absolute url 
+        if '/' == url:sub(1,1) then -- not relative path
+            local protocol, domain, path = base_url:match('(https?)://([^/]+)(.*)')
+            if self.proxy and domain:match(self.proxy) then
+                local prefix
+                prefix, path = path:match('/([^/]+)(/?.*)')
+                domain = domain..'/'..prefix
+            end
+            result = protocol..'://'..domain..url
+        else
+            result = base_url:gsub('[^/]*$',url)
+        end
+    end
+    log.debug("absolute url for "..url.." is "..result)
     return result
 end
 
@@ -156,6 +185,7 @@ function M:request(args)
         local response_list = {}
         local result, rheaders, status
         log.info(method .. " " .. url)
+        url = self:make_proxy_url(url)
         result, code, rheaders, status = https.request {
             url = url,
             method = method, 
@@ -170,7 +200,7 @@ function M:request(args)
         if(nil ~= result and code >= 200 and code < 400) then
             parse_cookies(rheaders["set-cookie"], self.jar)
             if not nofollow and (code == 302 or code == 301) then
-                url = make_absolute(url, rheaders['location'])
+                url = self:make_absolute(url, rheaders['location'])
                 log.info("redirecting to "..url)
             else
                 if response_list then

@@ -1,5 +1,4 @@
 import logging
-from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from http.client import HTTPConnection
 HTTPConnection.debuglevel = 0
 
@@ -17,48 +16,93 @@ ssdpy_log.setLevel(logging.WARNING)
 ssdpy_log.propagate = True
 
 
-import argparse
-from getpass import getpass
-import cherrypy
-import keyring
-from alarm import AlarmDotCom
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from socketserver import ThreadingMixIn
 from ssdpy import SSDPServer
-from alarm import AlarmDotCom
-import threading
 import socket
+import argparse, requests
+import threading
 
-class AlarmComService(object):
-    def __init__(self):
-        self.panel = AlarmDotCom()
+class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.0'
+    supported_servers = ['www.alarm.com']
     
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def index(self):
-        return {'status': 'up'}
+    def get_server(self, index):
+        return self.supported_servers[index-1]
+    
+    def get_base_headers(self, hostname):
+        return {'Host': hostname}
+    
+    def do_HEAD(self):
+        self.do_GET(body=False)
+        return
+        
+    def do_GET(self, body=True):
+        sent = False
+        try:
+            first, rest = self.path.split('/',1)
+            hostname = self.get_server(int(first))
+            url = 'https://{}{}'.format(hostname, rest)
+            req_header = self.parse_headers()
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def status(self):
-        return {'status': self.panel.update()}
+            print(req_header)
+            print(url)
+            resp = requests.get(url, headers=(req_header | self.get_base_headers(hostname)))
+            sent = True
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def armStay(self):
-        flags = (hasattr(cherrypy.request, 'json') and cherrypy.request.json) or {}
-        return {'status': self.panel.arm_stay(flags)}
+            self.send_response(resp.status_code)
+            self.send_resp_headers(resp)
+            msg = resp.text
+            if body:
+                self.wfile.write(msg.encode(encoding='UTF-8',errors='strict'))
+            return
+        finally:
+            if not sent:
+                self.send_error(404, 'error trying to proxy')
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def armAway(self):
-        flags = (hasattr(cherrypy.request, 'json') and cherrypy.request.json) or {}
-        return {'status': self.panel.arm_away(flags)}
+    def do_POST(self, body=True):
+        sent = False
+        try:
+            first, rest = self.path.split('/',1)
+            hostname = self.get_server(int(first))
+            url = 'https://{}{}'.format(hostname, rest)
+            content_len = int(self.headers.getheader('content-length', 0))
+            post_body = self.rfile.read(content_len)
+            req_header = self.parse_headers()
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def disarm(self):
-        return {'status': self.panel.disarm()}
+            resp = requests.post(url, data=post_body, headers=(req_header | self.get_base_headers(hostname)))
+            sent = True
+
+            self.send_response(resp.status_code)
+            self.send_resp_headers(resp)
+            if body:
+                self.wfile.write(resp.content)
+            return
+        finally:
+            if not sent:
+                self.send_error(404, 'error trying to proxy')
+
+    def parse_headers(self):
+        req_header = {}
+        for line in self.headers:
+            line_parts = [o.strip() for o in line.split(':', 1)]
+            if len(line_parts) == 2:
+                req_header[line_parts[0]] = line_parts[1]
+        return req_header
+
+    def send_resp_headers(self, resp):
+        respheaders = resp.headers
+        print ('Response Header')
+        for key in respheaders:
+            if key not in ['Content-Encoding', 'Transfer-Encoding', 'content-encoding', 'transfer-encoding', 'content-length', 'Content-Length']:
+                print (key, respheaders[key])
+                self.send_header(key, respheaders[key])
+        self.send_header('Content-Length', len(resp.content))
+        self.end_headers()
+        
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+
 
 def get_ip():
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -73,38 +117,29 @@ def get_ip():
             s.close()
         return IP
 
-def start_cherry():
-    cherrypy.server.socket_host = '0.0.0.0'
-    cherrypy.quickstart(AlarmComService())    
+def start_proxy(ip):
+    ip = get_ip()    
+    server_address = (ip, args.port)
+    httpd = ThreadedHTTPServer(server_address, ProxyHTTPRequestHandler)
+    print('http server is running as reverse proxy at '+ip+':'+args.port)
+    httpd.serve_forever()
 
-def start_ssdp():
-    server = SSDPServer("uuid:de8a5619-2603-40d1-9e21-1967952d7f86", device_type="urn:SmartThingsCommunity:device:AlarmComProxy:1", location='http://'+get_ip()+':'+str(cherrypy.server.socket_port)+'/')
+def start_ssdp(ip):
+    ip = get_ip()    
+    server = SSDPServer("uuid:de8a5619-2603-40d1-9e21-1967952d7f86", device_type="urn:SmartThingsCommunity:device:GenericProxy:1", location='http://'+get_ip()+':'+str(args.port)+'/')
+    print('ssdp server is running '+ip+':'+args.port)
     server.serve_forever()
         
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--force", help="force update credentials",
-                        action="store_true")
+    parser.add_argument("--port", help="port for proxy",
+                        default="8081")
     parser.add_argument("--nossdp", help="does not start ssdp server",
                         action="store_true")
     args = parser.parse_args()
-    
-    kr = CryptFileKeyring()
-    kr.keyring_key = getpass('Keyring Passphrase: ')
-    keyring.set_keyring(kr)
-    
-    panel_id = keyring.get_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.PANEL_KEY)
-    if(not panel_id):
-        username = keyring.get_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.USERNAME_KEY)
-        password = keyring.get_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.PASSWORD_KEY)
-        if(not username or not password or args.force):
-            username = getpass("Alarm.com username: ")
-            password = getpass("Alarm.com password: ")
-            keyring.set_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.USERNAME_KEY, username)
-            keyring.set_password(AlarmDotCom.SERVICE_ID, AlarmDotCom.PASSWORD_KEY, password)
 
-    threads = [threading.Thread(target=start_cherry)]
+    threads = [threading.Thread(target=start_proxy)]
     if(not args.nossdp):
         threads.append(threading.Thread(target=start_ssdp))
 

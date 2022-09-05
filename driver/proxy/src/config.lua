@@ -3,9 +3,9 @@ local config = {}
 -- NOTE: In the future this information
 -- may be submitted through the Developer
 -- Workspace to avoid hardcoded values.
-config.DEVICE_PROFILE='AlarmComSecuritySystem.vP'
+config.DEVICE_PROFILE='AlarmComSecuritySystem.vPx'
 config.DEVICE_TYPE='LAN'
-config.URN='urn:SmartThingsCommunity:device:AlarmComProxy:1'
+config.URN='urn:SmartThingsCommunity:device:GenericProxy:1'
 -- SSDP Config
 config.MC_ADDRESS='239.255.255.250'
 config.MC_PORT=1900
