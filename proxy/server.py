@@ -66,7 +66,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             empty, first, rest = self.path.split('/',2)
             hostname = self.get_server(int(first))
             url = 'https://{}{}'.format(hostname, '/'+rest)
-            content_len = int(self.headers.getheader('content-length', 0))
+            content_len = int(self.headers.get('content-length', 0))
             post_body = self.rfile.read(content_len)
             req_header = self.parse_headers()
 
