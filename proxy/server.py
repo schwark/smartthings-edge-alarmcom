@@ -119,7 +119,7 @@ def get_ip():
 
 def start_proxy():
     ip = get_ip()    
-    server_address = (ip, args.port)
+    server_address = (ip, int(args.port))
     httpd = ThreadedHTTPServer(server_address, ProxyHTTPRequestHandler)
     print('http server is running as reverse proxy at '+ip+':'+args.port)
     httpd.serve_forever()
