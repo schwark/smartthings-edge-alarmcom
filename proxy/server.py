@@ -117,14 +117,14 @@ def get_ip():
             s.close()
         return IP
 
-def start_proxy(ip):
+def start_proxy():
     ip = get_ip()    
     server_address = (ip, args.port)
     httpd = ThreadedHTTPServer(server_address, ProxyHTTPRequestHandler)
     print('http server is running as reverse proxy at '+ip+':'+args.port)
     httpd.serve_forever()
 
-def start_ssdp(ip):
+def start_ssdp():
     ip = get_ip()    
     server = SSDPServer("uuid:de8a5619-2603-40d1-9e21-1967952d7f86", device_type="urn:SmartThingsCommunity:device:GenericProxy:1", location='http://'+get_ip()+':'+str(args.port)+'/')
     print('ssdp server is running '+ip+':'+args.port)
