@@ -1,5 +1,5 @@
 name: "Alarm.com Generic Proxy Security System"
-packageKey: "Alarm-com-Generic-Proxy-Security-System"
+packageKey: "Alarmcom-GenProxy-Security-System"
 permissions:
   lan: {}
   discovery: {}

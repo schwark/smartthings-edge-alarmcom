@@ -110,11 +110,11 @@ end
 
 function M:make_proxy_url(url)
     local result = url
-    if self.proxy and not url.match(self.proxy) then
+    if self.proxy and not url:match(self.proxy) then
         local protocol, domain, path = url:match('(https?)://([^/]+)(.*)')
         local domain_prefix = self.proxy_domains[domain]
         if domain_prefix then
-            result = 'http://'..self.proxy..'/'..domain_prefix..'/'..path
+            result = 'http://'..self.proxy..'/'..domain_prefix..path
         end
     end
     log.debug("proxy url for "..url.." is "..result)

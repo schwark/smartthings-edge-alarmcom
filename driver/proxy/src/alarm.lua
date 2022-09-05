@@ -27,9 +27,9 @@ function M:login()
 			  	__EVENTVALIDATION = ''
     }
     browser:add_vars(vars)
-    response, code = browser:request({ url = "https://alarm.com/login.aspx"})
+    response, code = browser:request({ url = "https://www.alarm.com/login.aspx"})
     log.debug(code)
-    if code < 300 then
+    if "timeout" ~= code and code < 300 then
         local params = {
                  __PREVIOUSPAGE = nil,
 			  	__VIEWSTATE = nil,
@@ -53,7 +53,7 @@ function M:init()
     local browser = self.browser
     local user_id, system_id
     code = self:login()
-    if code < 300 then
+    if "timeout" ~= code and code < 300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/identities", headers = headers} )                
         self.user_id = response['data'][1]['id']
@@ -62,7 +62,7 @@ function M:init()
         log.info(self.system_id, "system-id")
     end
     local panel_id
-    if code<300 then
+    if "timeout" ~= code and code<300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/systems/systems/"..self.system_id, headers = headers} )                
         self.panel_id = response['data']['relationships']['partitions']['data'][1]['id']
@@ -94,7 +94,7 @@ function M:command(params)
     for i = 1, 2 do
         headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/partitions/"..self.panel_id.."/"..command, method="POST", headers = headers, params = flags} )                
-        if 200 == code then
+        if "timeout" ~= code and 200 == code then
             break
         else
             self:login()
@@ -114,7 +114,7 @@ function M:get_state()
     for i = 1, 2 do
         headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/partitions/"..self.panel_id, headers = headers} )                
-        if 200 == code then
+        if "timeout" ~= code and 200 == code then
             result = self.states[response['data']['attributes']['state']]
             break
         else

@@ -40,9 +40,9 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self, body=True):
         sent = False
         try:
-            first, rest = self.path.split('/',1)
+            empty, first, rest = self.path.split('/',2)
             hostname = self.get_server(int(first))
-            url = 'https://{}{}'.format(hostname, rest)
+            url = 'https://{}{}'.format(hostname, '/'+rest)
             req_header = self.parse_headers()
 
             print(req_header)
@@ -63,9 +63,9 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self, body=True):
         sent = False
         try:
-            first, rest = self.path.split('/',1)
+            empty, first, rest = self.path.split('/',2)
             hostname = self.get_server(int(first))
-            url = 'https://{}{}'.format(hostname, rest)
+            url = 'https://{}{}'.format(hostname, '/'+rest)
             content_len = int(self.headers.getheader('content-length', 0))
             post_body = self.rfile.read(content_len)
             req_header = self.parse_headers()

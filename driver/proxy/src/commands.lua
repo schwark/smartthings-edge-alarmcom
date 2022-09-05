@@ -18,7 +18,7 @@ function command_handlers.get_panel(device)
         local ip_port = discovery.get_device_details()
         if ip_port ~= nil then
             log.info("initializing panel with "..ip_port)
-            panel = Alarm({location = ip_port})            
+            panel = Alarm({proxy = ip_port})            
             if panel then
                 device:set_field("panel", panel)
             else
@@ -72,7 +72,7 @@ function command_handlers.handle_refresh(driver, device, command)
   
     local panel = assert(command_handlers.get_panel(device))
     if panel then
-        local state = panel:refresh()
+        local state = panel:get_state()
         if state and switch_states[state] then  
             log.info("Panel state is "..state)  
             device:emit_event(capabilities.securitySystem.securitySystemStatus[switch_states[state].security]())
