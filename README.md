@@ -1,10 +1,8 @@
 # SmartThings Alarm.com integration via local Proxy
 
-This repo contains 
+This repo contains a proxy based alarm.com integration that requires a proxy server that needs to be run somewhere in the same network as your SmartThings hub. It is written in python so can run anywhere python runs, but a raspberrypi is usually a good place to do it - so I am going to say raspberrypi in the README below, but you can host in anywhere including maybe your synology NAS, etc. 
 
-a) direct implementation of the Alarm.com integration which does not work today due to the security model preventing access to alarm.com from a LAN driver, but hopefully it will work someday
-
-b) proxy based alarm.com integration that requires a proxy server that needs to be run somewhere in the same network as your SmartThings hub. It is written in python so can run anywhere python runs, but a raspberrypi is usually a good place to do it - so I am going to say raspberrypi in the README below, but you can host in anywhere including maybe your synology NAS, etc.
+When someday access to alarm.com will work directly from the driver, the same driver should be able to work without the proxy.
 
 The rest of this README is instructions on how to get the proxy based integration working
 
