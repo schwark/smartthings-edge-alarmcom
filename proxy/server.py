@@ -98,7 +98,6 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def send_resp_headers(self, resp):
         respheaders = resp.headers
-        print ('Response Header')
         for key in respheaders:
             if key not in ['Content-Encoding', 'Transfer-Encoding', 'content-encoding', 'transfer-encoding', 'content-length', 'Content-Length']:
                 log.debug("%s : %s", key, respheaders[key])
