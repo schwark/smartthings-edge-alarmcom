@@ -28,7 +28,7 @@ function M:login()
     }
     browser:add_vars(vars)
     response, code = browser:request({ url = "https://www.alarm.com/login.aspx"})
-    if "timeout" ~= code and code < 300 then
+    if "timeout" ~= tostring(code) and code < 300 then
         local params = {
                  __PREVIOUSPAGE = "",
 			  	__VIEWSTATE = "",
@@ -61,7 +61,7 @@ function M:init()
         log.info(self.system_id, "system-id")
     end
     local panel_id
-    if "timeout" ~= code and code<300 then
+    if "timeout" ~= tostring(code) and code<300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/systems/systems/"..self.system_id, headers = headers} )                
         self.panel_id = response['data']['relationships']['partitions']['data'][1]['id']
@@ -93,7 +93,7 @@ function M:command(params)
     for i = 1, 2 do
         headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/partitions/"..self.panel_id.."/"..command, method="POST", headers = headers, params = flags} )                
-        if "timeout" ~= code and 200 == code then
+        if "timeout" ~= tostring(code) and 200 == code then
             break
         else
             self:login()
@@ -113,7 +113,7 @@ function M:get_state()
     for i = 1, 2 do
         headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/partitions/"..self.panel_id, headers = headers} )                
-        if "timeout" ~= code and 200 == code then
+        if "timeout" ~= tostring(code) and 200 == code then
             result = self.states[response['data']['attributes']['state']]
             break
         else

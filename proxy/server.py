@@ -47,8 +47,8 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             req_header = (self.parse_headers() | self.get_base_headers(hostname))
 
             log.debug("========start-get========")
-            log.debug("header", req_header)
-            log.debug("url", url)
+            log.debug("header: %s", req_header)
+            log.debug("url: %s", url)
             resp = requests.get(url, headers=req_header)
             sent = True
 
@@ -74,9 +74,9 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             req_header = (self.parse_headers() | self.get_base_headers(hostname))
 
             log.debug("========start-post========")
-            log.debug("header", req_header)
-            log.debug("url", url)
-            log.debug("body", post_body)
+            log.debug("header: %s", req_header)
+            log.debug("url: %s", url)
+            log.debug("body: %s", post_body)
             resp = requests.post(url, data=post_body, headers=req_header)
             sent = True
 
@@ -101,7 +101,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
         print ('Response Header')
         for key in respheaders:
             if key not in ['Content-Encoding', 'Transfer-Encoding', 'content-encoding', 'transfer-encoding', 'content-length', 'Content-Length']:
-                log.debug(key, respheaders[key])
+                log.debug("%s : %s", key, respheaders[key])
                 self.send_header(key, respheaders[key])
         self.send_header('Content-Length', len(resp.content))
         self.end_headers()
