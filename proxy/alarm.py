@@ -1,4 +1,3 @@
-import keyring
 import logging
 import requests
 from browser import Browser
@@ -8,24 +7,17 @@ log = logging.getLogger("alarmdotcom")
 log.setLevel(logging.DEBUG)
 
 class AlarmDotCom:
-    SERVICE_ID = "alarmcom"
-    USERNAME_KEY = "username"
-    PASSWORD_KEY = "password"
-    AFG_KEY = "afg"
-    USER_KEY = "kender"
-    SYSTEM_KEY = "systemkey"
-    PANEL_KEY = "panelid"
     STATES = ['disarm', 'armStay', 'armAway']
     SESSION_TIMEOUT = 360
     
-    def __init__(self) -> None:
+    def __init__(self, username=None, password=None, panel_id=None) -> None:
         self.browser = Browser()
         self.reload = False
         self.user_id = None
         self.system_id = None
-        self.panel_id = keyring.get_password(self.SERVICE_ID, self.PANEL_KEY)
-        self.username = keyring.get_password(self.SERVICE_ID, self.USERNAME_KEY)
-        self.password = keyring.get_password(self.SERVICE_ID, self.PASSWORD_KEY)
+        self.panel_id = panel_id
+        self.username = username
+        self.password = password
         self.afg = None
         self.last_request = None
         self.update()
@@ -40,19 +32,16 @@ class AlarmDotCom:
     def set_panel_id(self, panel_id):
         if(panel_id):
             self.panel_id = str(panel_id)
-            keyring.set_password(self.SERVICE_ID, self.PANEL_KEY, self.panel_id)
         log.debug("saved panel id")
         
     def set_system_id(self, system_id):
         if(system_id):
             self.system_id = str(system_id)
-            keyring.set_password(self.SERVICE_ID, self.SYSTEM_KEY, self.system_id)
         log.debug("saved system id")
         
     def set_user_id(self, user_id):
         if(user_id):
             self.user_id = str(user_id)
-            keyring.set_password(self.SERVICE_ID, self.USER_KEY, self.user_id)
         log.debug("saved user id")
         
     def init(self):

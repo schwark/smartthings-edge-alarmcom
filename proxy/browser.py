@@ -1,4 +1,3 @@
-import keyring
 import json
 import requests
 import re
