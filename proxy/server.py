@@ -49,7 +49,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             log.debug("========start-get========")
             log.debug("header: %s", req_header)
             log.debug("url: %s", url)
-            resp = requests.get(url, headers=req_header)
+            resp = requests.get(url, headers=req_header, allow_redirects=False)
             sent = True
 
             self.send_response(resp.status_code)
@@ -77,7 +77,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             log.debug("header: %s", req_header)
             log.debug("url: %s", url)
             log.debug("body: %s", post_body)
-            resp = requests.post(url, data=post_body, headers=req_header)
+            resp = requests.post(url, data=post_body, headers=req_header, allow_redirects=False)
             sent = True
 
             self.send_response(resp.status_code)
