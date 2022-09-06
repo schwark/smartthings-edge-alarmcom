@@ -2,7 +2,7 @@ import logging
 from http.client import HTTPConnection
 HTTPConnection.debuglevel = 0
 
-logging.basicConfig(filename="/tmp/alarmcom.log",
+logging.basicConfig(filename="/tmp/stproxy.log",
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
