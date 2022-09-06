@@ -44,30 +44,17 @@ Download this code repo as a zip file
 Copy the `proxy` directory (not the one inside drivers directory) of inside downloaded zip file on the raspberypi anywhere
 
 ```
-sudo ufw allow 8080    # only if you have ufw enabled on the raspberrypi
+sudo ufw allow 8081    # only if you have ufw enabled on the raspberrypi
 cd <proxy-directory--wherever-you-copied it>
 pip3 install -r requirements.txt
 supervisord -c supervisord.conf
 supervisorctl update
-<wait 1 s>
-supervisorctl fg alarmcomproxy
+```
 
-Keyring Passphrase:  
-<enter a passphrase to encrypt storage of your password> 
-(REMEMBER THIS - need to type every time startup)
+To stop the proxy
 
-Alarm.com username:  
-<enter your alarm.com username> (asked only once, stored encrypted with above passphrase)
-
-Alarm.com password:  
-<enter your alarm.com password> (asked only once, stored encrypted with above passphrase)
-
-<wait for 30s to a couple of mins (especially on raspberrypi) till you see something like this below...>
-
-ENGINE Bus STARTED
-
-# now type in..
-<Ctrl-C>
+```
+supervisorctl stop stproxy
 ```
 
 ## Driver Installation
@@ -85,6 +72,14 @@ ENGINE Bus STARTED
 
 2. After a couple of minutes, a new device should show up for your **Alarm.com Panel** that is automatically added
 
-The **Alarm.com Panel** device in SmartThings app has 3 settings in the Settings section of the device that control Silent Arming, Forcing Bypass of open sensors, and arming with a No Entry Delay
+3. Go to **Alarm.com Panel** device in SmartThings app, and click on three vertical dots on the top right, and click on **Settings**
+
+4. Enter username and password for Alarm.com
+
+5. Now go back to the device page, and pull down to refresh
+
+6. The device should now show switch state and Security mode state
+
+The **Alarm.com Panel** device in SmartThings app has 3 settings in the Settings section of the device that control Silent Arming, Forcing Bypass of open sensors, and arming with a No Entry Delay. 
 
 The panel can also be operated like a switch - turning it on puts the alarm in ArmStay mode, and turning it off disarms the alarm.

@@ -1,5 +1,0 @@
-name: "Alarm.com Security System"
-packageKey: "Alarm-com-Security-System"
-permissions:
-  lan: {}
-  discovery: {}
