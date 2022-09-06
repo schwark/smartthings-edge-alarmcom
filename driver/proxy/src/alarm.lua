@@ -28,13 +28,12 @@ function M:login()
     }
     browser:add_vars(vars)
     response, code = browser:request({ url = "https://www.alarm.com/login.aspx"})
-    log.debug(code)
     if "timeout" ~= code and code < 300 then
         local params = {
-                 __PREVIOUSPAGE = nil,
-			  	__VIEWSTATE = nil,
-			  	__VIEWSTATEGENERATOR = nil,
-			  	__EVENTVALIDATION = nil,
+                 __PREVIOUSPAGE = "",
+			  	__VIEWSTATE = "",
+			  	__VIEWSTATEGENERATOR = "",
+			  	__EVENTVALIDATION = "",
 			  	IsFromNewSite = '1',
 			  	JavaScriptTest =  '1',
 			  	['ctl00$ContentPlaceHolder1$loginform$hidLoginID'] = '',

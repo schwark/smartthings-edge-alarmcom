@@ -7,7 +7,8 @@ logging.basicConfig(filename="/tmp/alarmcom.log",
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.NOTSET)
-logging.getLogger().setLevel(logging.DEBUG)
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
 requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
@@ -43,11 +44,12 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             empty, first, rest = self.path.split('/',2)
             hostname = self.get_server(int(first))
             url = 'https://{}{}'.format(hostname, '/'+rest)
-            req_header = self.parse_headers()
+            req_header = (self.parse_headers() | self.get_base_headers(hostname))
 
-            print(req_header)
-            print(url)
-            resp = requests.get(url, headers=(req_header | self.get_base_headers(hostname)))
+            log.debug("========start-get========")
+            log.debug("header", req_header)
+            log.debug("url", url)
+            resp = requests.get(url, headers=req_header))
             sent = True
 
             self.send_response(resp.status_code)
@@ -59,6 +61,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
         finally:
             if not sent:
                 self.send_error(404, 'error trying to proxy')
+            log.debug("========end-get========")
 
     def do_POST(self, body=True):
         sent = False
@@ -68,9 +71,13 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             url = 'https://{}{}'.format(hostname, '/'+rest)
             content_len = int(self.headers.get('content-length', 0))
             post_body = self.rfile.read(content_len)
-            req_header = self.parse_headers()
+            req_header = (self.parse_headers() | self.get_base_headers(hostname))
 
-            resp = requests.post(url, data=post_body, headers=(req_header | self.get_base_headers(hostname)))
+            log.debug("========start-post========")
+            log.debug("header", req_header)
+            log.debug("url", url)
+            log.debug("body", post_body)
+            resp = requests.post(url, data=post_body, headers=req_header)
             sent = True
 
             self.send_response(resp.status_code)
@@ -81,13 +88,12 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
         finally:
             if not sent:
                 self.send_error(404, 'error trying to proxy')
+            log.debug("========end-post========")
 
     def parse_headers(self):
         req_header = {}
-        for line in self.headers:
-            line_parts = [o.strip() for o in line.split(':', 1)]
-            if len(line_parts) == 2:
-                req_header[line_parts[0]] = line_parts[1]
+        for key in self.headers.keys():
+            req_header[key] = self.headers.get(key)
         return req_header
 
     def send_resp_headers(self, resp):
@@ -95,7 +101,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
         print ('Response Header')
         for key in respheaders:
             if key not in ['Content-Encoding', 'Transfer-Encoding', 'content-encoding', 'transfer-encoding', 'content-length', 'Content-Length']:
-                print (key, respheaders[key])
+                log.debug(key, respheaders[key])
                 self.send_header(key, respheaders[key])
         self.send_header('Content-Length', len(resp.content))
         self.end_headers()

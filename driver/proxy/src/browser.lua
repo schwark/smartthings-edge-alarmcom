@@ -3,6 +3,7 @@ local https = cosock.asyncify 'socket.http'
 local ltn12 = require "ltn12"
 local json = require("st.json")
 local log = require("log")
+local utils = require("st.utils")
 
 local function interp(s, tab)
     return (s:gsub('%%%((%a%w*)%)([-0-9%.]*[cdeEfgGiouxXsq])',
@@ -95,10 +96,11 @@ end
 
 local function merge_vars(params, vars)
     for key, value in pairs(params) do
-        if(vars[key] and not value) then
+        if(vars[key]) then
             params[key] = vars[key]
         end
     end
+    return params
 end
 
 local function extract_vars(vars, response) 
@@ -155,7 +157,7 @@ function M:request(args)
 
     self.add_cookies(cookies)
     while(nil ~= url) do
-        merge_vars(params, self.state)
+        params = merge_vars(params, self.state)
         response = ""
         code = nil
         local body = make_body(params, headers)
@@ -185,9 +187,11 @@ function M:request(args)
         local response_list = {}
         local result, rheaders, status
         log.info(method .. " " .. url)
-        url = self:make_proxy_url(url)
+        log.debug(utils.stringify_table(headers), "headers")
+        log.debug((body or "nil"), "body")
+        local proxy_url = self:make_proxy_url(url)
         result, code, rheaders, status = https.request {
-            url = url,
+            url = proxy_url,
             method = method, 
             headers = headers,
             source = source,
@@ -205,16 +209,16 @@ function M:request(args)
             else
                 if response_list then
                     if rheaders['content-type']:match('json')  then
-                        log.info("decoding json response "..temp_response)
+                        log.debug("decoding json response "..temp_response)
                         response = json.decode(temp_response)
-                        log.info("got json object "..json.encode(response))
+                        log.debug("got json object "..json.encode(response))
                     else
                         self.referer = url
                         response = temp_response
                         if response then
                             self.state = extract_vars(self.state, response)
                         end
-                        log.info(self.state, "state")
+                        log.debug(utils.stringify_table(self.state), "state")
                     end    
                 end
                 url = nil
@@ -223,6 +227,7 @@ function M:request(args)
             url = nil
         end
     end
+    log.debug("response code is "..(code or "nil"))
     return response, code
 end
 

@@ -18,13 +18,17 @@ function command_handlers.get_panel(device)
         local ip_port = discovery.get_device_details()
         if ip_port ~= nil then
             log.info("initializing panel with "..ip_port)
-            panel = Alarm({proxy = ip_port})            
+            panel = Alarm({proxy = ip_port, username=device.preferences.username, password=device.preferences.password})            
             if panel then
                 device:set_field("panel", panel)
             else
                 log.error("unable to initialize panel")
             end
         end
+    end
+    if(panel and ((not panel.username or "" == panel.username) or (not panel.password or "" == panel.username))) then
+        panel.username = device.preferences.username
+        panel.password = device.preferences.password
     end
     return panel
 end
