@@ -44,7 +44,7 @@ local function make_body(params, headers)
         result = json.encode(params)
     else
         for key, value in pairs(params) do
-            result = result .. urlencode(key) .. "=" .. urlencode(value) .. "&"
+            result = result .. urlencode(key) .. "=" .. urlencode(tostring(value)) .. "&"
         end
     end
     return result

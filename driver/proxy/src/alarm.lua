@@ -80,7 +80,6 @@ function M:command(params)
     local command = params.command
     log.info("executing "..command)
     local flags = {statePollOnly = false}
-    headers['content-type'] = 'application/json'
     if params.bypass then
         flags["forceBypass"] = true
     end
@@ -92,6 +91,7 @@ function M:command(params)
     end
     for i = 1, 2 do
         headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
+        headers['content-type'] = 'application/json'
         response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/partitions/"..self.panel_id.."/"..command, method="POST", headers = headers, params = flags} )                
         if "timeout" ~= tostring(code) and 200 == code then
             break
