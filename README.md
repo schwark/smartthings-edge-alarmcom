@@ -23,26 +23,21 @@ python3 -m ensurepip --upgrade
 # try to see if you already have python - python or python3 should be found, if not do the following
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install python
-
-python3 -m ensurepip --upgrade
 ```
 
 **On a Windows machine**
 
-Download from [Python Download](https://www.python.org/downloads/) page and install and then run 
+Download from [Python Download](https://www.python.org/downloads/) page and install
 
-```
-python3 -m ensurepip --upgrade
-```
 
 ## Proxy Installation
 
-Download this code repo as a zip file 
+Download this code repo as a [zip file](https://github.com/schwark/smartthings-edge-alarmcom/archive/refs/heads/main.zip)
 
-Copy the `proxy` directory (not the one inside drivers directory) of inside downloaded zip file on the raspberypi anywhere
+Unzip the zip file. Make a note of where you downloaded and unzip'ed the file. The `proxy` directory inside is what you want to remember the location of. Open a Terminal (Mac OS X) or Command Prompt (Windows) or shell (linux)
 
 ```
-sudo ufw allow 8081    # only if you have ufw enabled on the raspberrypi
+sudo ufw allow 8081    # only on linux and if you have ufw enabled on the raspberrypi
 cd <proxy-directory--wherever-you-copied it>
 pip3 install -r requirements.txt
 supervisord -c supervisord.conf
