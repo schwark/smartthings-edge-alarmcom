@@ -21,8 +21,7 @@ RUN addgroup --gid 1001 --system app && \
 
 USER app
 
-ENV PYTHONUNBUFFERED=1
-HEALTHCHECK CMD curl --fail http://localhost:8081/1/login.aspx || exit 1 
+#ENV PYTHONUNBUFFERED=1
+#HEALTHCHECK CMD curl --fail http://localhost:8081/1/login.aspx || exit 1 
 
-RUN nohup python server.py > /tmp/server.log &
-
+CMD ["python", "server.py"]
