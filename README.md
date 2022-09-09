@@ -4,9 +4,11 @@ This repo contains a proxy based alarm.com integration that requires a proxy ser
 
 When someday access to alarm.com will work directly from the driver, the same driver should be able to work without the proxy.
 
-The rest of this README is instructions on how to get the proxy based integration working
+The rest of this README is instructions on how to get the proxy based integration working.
 
-## Python Installation
+There are two ways to install the proxy - one without docker (non-docker), which is a little more involved. Or you can install docker and run the docker container (simpler). You do EITHER the Non-Docker steps or the Docker step - not both.
+
+## Python Installation (Non-Docker)
 
 **On a raspberry pi, or other Linux machine**
 
@@ -30,7 +32,7 @@ brew install python
 Download from [Python Download](https://www.python.org/downloads/) page and install
 
 
-## Proxy Installation
+## Proxy Installation (Non-Docker)
 
 Download this code repo as a [zip file](https://github.com/schwark/smartthings-edge-alarmcom/archive/refs/heads/main.zip)
 
@@ -48,6 +50,13 @@ To stop the proxy
 
 ```
 supervisorctl stop stproxy
+```
+
+## Proxy Installation (Docker)
+Install docker on your [preferred platform](https://docs.docker.com/get-docker/)
+
+```
+docker run -td -p 8081:8081 schwark/stproxy
 ```
 
 ## Driver Installation
