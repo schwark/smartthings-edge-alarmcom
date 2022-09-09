@@ -33,12 +33,12 @@ local function find_device()
   -- Socket will wait n seconds
   -- based on the s:setoption(n)
   -- to receive a response back.
-  local res = upnp:receivefrom()
+  local res, ip = upnp:receivefrom()
 
   -- close udp socket
   upnp:close()
 
-  return res
+  return res, ip
 end
 
 local function create_device(driver, device)
@@ -60,14 +60,15 @@ end
 function discovery.get_device_details()
   local ip_port = nil
   local usn = nil
-  local device_res = find_device()
+  local device_res, ip = find_device()
   if device_res ~= nil then
     device_res = parse_ssdp(device_res)
     log.info(utils.stringify_table(device_res, "device_res"))
   end
   if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
-    ip_port = device_res.location:match('http://([^/]+)')
+    local domain, port = device_res.location:match('http://([^:/]+):(%d+)')
     usn = device_res.usn
+    ip_port = ip..':'..port
   end
   return ip_port, usn
 end
