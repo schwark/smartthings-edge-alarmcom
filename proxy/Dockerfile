@@ -15,6 +15,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY server.py .
 
 EXPOSE 8081
+EXPOSE 1900/udp
 
 RUN addgroup --gid 1001 --system app && \
     adduser --no-create-home --shell /bin/false --disabled-password --uid 1001 --system --group app
