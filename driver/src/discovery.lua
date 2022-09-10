@@ -1,88 +1,67 @@
 local log = require "log"
 local config = require("config")
-local socket = require('socket')
-local utils = require("st.utils")
+local commands = require('commands')
+local socket = require("socket")
 local discovery = {}
 
--- SSDP Response parser
-local function parse_ssdp(data)
-  log.info("ssdp response:\n"..data)
-  local res = {}
-  res.status = data:sub(0, data:find('\r\n'))
-  for k, v in data:gmatch('([%w-]+):[%s]-([%w+-:%. /=]+)') do
-    res[k:lower()] = v
-  end
-  return res
-end
 
--- This function enables a UDP
--- Socket and broadcast a single
--- M-SEARCH request, i.e., it
--- must be looped appart.
-local function find_device()
-  -- UDP socket initialization
-  local upnp = socket.udp()
-  upnp:setsockname('*', 0)
-  upnp:setoption('broadcast', true)
-  upnp:settimeout(config.MC_TIMEOUT)
-
-  -- broadcasting request
-  log.info('===== SCANNING NETWORK...')
-  upnp:sendto(config.MSEARCH, config.MC_ADDRESS, config.MC_PORT)
-
-  -- Socket will wait n seconds
-  -- based on the s:setoption(n)
-  -- to receive a response back.
-  local res, ip = upnp:receivefrom()
-
-  -- close udp socket
-  upnp:close()
-
-  return res, ip
-end
-
-local function create_device(driver, device)
-  log.info('===== CREATING DEVICE...')
-  log.info('===== DEVICE DESTINATION ADDRESS: '..device.location)
+local function create_panel(driver, device)
+  log.info('===== creating Panel...')
+  log.info('===== panel destination: '..device.location)
+  local network_id = config.ALARM_ID
+  local usn = device.usn or network_id
   -- device metadata table
   local metadata = {
     type = config.DEVICE_TYPE,
-    device_network_id = 'ALARMCOMPROXYPANEL',
+    device_network_id = network_id,
     label = device.name,
-    profile = config.DEVICE_PROFILE,
+    profile = config.PANEL_PROFILE,
     manufacturer = device.manufacturer,
     model = device.model,
-    vendor_provided_label = device.usn
+    vendor_provided_label = usn
   }
   return driver:try_create_device(metadata)
 end
 
-function discovery.get_device_details()
-  local ip_port = nil
-  local usn = nil
-  local device_res, ip = find_device()
-  if device_res ~= nil then
-    device_res = parse_ssdp(device_res)
-    log.info(utils.stringify_table(device_res, "device_res"))
-  end
-  if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
-    local domain, port = device_res.location:match('http://([^:/]+):(%d+)')
-    usn = device_res.usn
-    ip_port = ip..':'..port
-  end
-  return ip_port, usn
+local function create_sensor(driver, device)
+  log.info('===== creating sensor...'..device.name)
+  local network_id = device.id
+  local usn = device.id
+  -- device metadata table
+  local metadata = {
+    type = config.DEVICE_TYPE,
+    device_network_id = network_id,
+    label = device.name,
+    profile = config.SENSOR_PROFILE,
+    manufacturer = device.manufacturer,
+    model = device.model,
+    vendor_provided_label = usn
+  }
+  return driver:try_create_device(metadata)
 end
 
 function discovery.start(driver, opts, cons)
-    local ip_port, usn = discovery.get_device_details()
+    local panel_device = commands.get_panel_device(driver)
+    if nil == panel_device then
+      -- create the alarm panel
+      local ip_port, usn = commands.get_device_details()
 
-    if ip_port ~= nil then
-      log.info('===== panel found on network: '..ip_port)
+      if ip_port ~= nil then
+        log.info('===== proxy found on network: '..ip_port)
+      else
+        log.error('===== proxy not found on network')
+      end
 
-      local device = {location = ip_port, name ='Alarm.com Panel', manufacturer = 'Alarm.com', model = 'Alarm.com Proxy', label = usn}
-      return create_device(driver, device)
+      local device = {location = ip_port, name ='Alarm.com Panel', manufacturer = 'Alarm.com', model = config.PANEL_MODEL, label = usn}
+      create_panel(driver, device)    
+    else
+      local sensors = assert(commands.handle_get_sensors(driver, panel_device))
+      for id, item in pairs(sensors) do
+        local device = {id = id, name = item.name, manufacturer = 'Alarm.com', model = 'Alarm.com Sensor'}
+        create_sensor(driver, device)
+        socket.sleep(2)
+      end
     end
-    log.error('===== panel not found on network')
 end
 
 return discovery

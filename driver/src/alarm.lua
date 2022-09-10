@@ -11,6 +11,7 @@ local function constructor(self,o)
     o.username = o.username or nil
     o.password = o.password or nil
     o.states = { "disarm", "armStay", "armAway" }
+    o.sensors = o.sensors or false
     setmetatable(o, M)
     return o
 end
@@ -28,7 +29,7 @@ function M:login()
     }
     browser:add_vars(vars)
     response, code = browser:request({ url = "https://www.alarm.com/login.aspx"})
-    if "timeout" ~= tostring(code) and code < 300 then
+    if "timeout" ~= tostring(code) and type(code) ~= "string" and code < 300 then
         local params = {
                  __PREVIOUSPAGE = "",
 			  	__VIEWSTATE = "",
@@ -52,7 +53,7 @@ function M:init()
     local browser = self.browser
     local user_id, system_id
     code = self:login()
-    if "timeout" ~= code and code < 300 then
+    if "timeout" ~= tostring(code) and type(code) ~= "string" and code < 300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/identities", headers = headers} )                
         self.user_id = response['data'][1]['id']
@@ -61,13 +62,16 @@ function M:init()
         log.info(self.system_id, "system-id")
     end
     local panel_id
-    if "timeout" ~= tostring(code) and code<300 then
+    if "timeout" ~= tostring(code) and type(code) ~= "string" and code<300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/systems/systems/"..self.system_id, headers = headers} )                
         self.panel_id = response['data']['relationships']['partitions']['data'][1]['id']
         log.info(self.panel_id, "panel-id")
     end    
     log.info(code)
+    local success = type(code) ~= "string" and 200 == code
+    assert(success)
+    return success
 end
 
 function M:command(params)
@@ -100,6 +104,32 @@ function M:command(params)
         end
     end
     return code
+end
+
+function M:get_sensors()
+    log.info("getting sensors data...")
+    local result = nil
+    if not self.panel_id then
+        self:init()
+    end
+    local response, code, headers
+    local browser = self.browser
+    local statuses = {"open", "closed"}
+    
+    for i = 1, 2 do
+        headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
+        response, code = browser:request({ url = "https://www.alarm.com/web/api/devices/sensors", headers = headers} )                
+        if "timeout" ~= tostring(code) and 200 == code then
+            result = {}
+            for i, item in ipairs(response['data']) do
+                result[item.id] = {name = item.attributes.description, status=statuses[item.attributes.openClosedStatus]}
+            end
+            break
+        else
+            self:login()
+        end
+    end
+    return result
 end
 
 function M:get_state()

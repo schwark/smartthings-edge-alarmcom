@@ -17,6 +17,32 @@ preferences:
     explicit: true  
   - preferenceId: password
     explicit: true
+  - title: "Proxy IP Address"
+    name: proxyip
+    description: "IP address of the Proxy (needed if SSDP not working)"
+    required: false
+    preferenceType: string
+    definition:
+      maxLength: 15
+      stringType: text
+      default: ""
+  - title: "Proxy Port"
+    name: proxyport
+    description: "Port of the Proxy (needed if SSDP not working)"
+    required: false
+    preferenceType: string
+    definition:
+      minLength: 4
+      maxLength: 4
+      stringType: text
+      default: "8081"
+  - title: "Add Sensors"
+    name: sensors
+    description: "Add sensors to SmartThings"
+    required: false
+    preferenceType: boolean
+    definition: 
+      default: false
   - title: "Silent Arming"
     name: silent
     description: "Arm alarm silently"

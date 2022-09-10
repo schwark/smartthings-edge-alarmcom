@@ -10,11 +10,12 @@ function lifecycle_handler.init(driver, device)
   -- driver gets
   -- initialized.
 
+  if(device.model ~= config.PANEL_MODEL) then return end
   -- Refresh schedule
   device.thread:call_on_schedule(
     config.SCHEDULE_PERIOD,
     function ()
-      return commands.handle_refresh(nil, device)
+      return commands.handle_refresh(driver, device)
     end,
     'Refresh schedule')
 end
@@ -26,7 +27,8 @@ function lifecycle_handler.added(driver, device)
   -- request to share server's ip
   -- and port to the device os it
   -- can communicate back.
-  commands.handle_refresh(nil, device)
+  if(device.model ~= config.PANEL_MODEL) then return end
+  commands.handle_refresh(driver, device)
 end
 
 function lifecycle_handler.removed(_, device)

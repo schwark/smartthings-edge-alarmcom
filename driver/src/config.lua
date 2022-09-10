@@ -3,7 +3,9 @@ local config = {}
 -- NOTE: In the future this information
 -- may be submitted through the Developer
 -- Workspace to avoid hardcoded values.
-config.DEVICE_PROFILE='AlarmComSecuritySystem.vPx'
+config.PANEL_PROFILE='AlarmComSecuritySystem.vPx'
+config.SENSOR_PROFILE='AlarmComContactSensor.v1'
+config.PANEL_MODEL='Alarm.com Panel'
 config.DEVICE_TYPE='LAN'
 config.URN='urn:SmartThingsCommunity:device:GenericProxy:1'
 -- SSDP Config
@@ -18,4 +20,5 @@ config.MSEARCH=table.concat({
   'ST: '..config.URN
 }, '\r\n')
 config.SCHEDULE_PERIOD=300
+config.ALARM_ID='ALARMCOMPROXYPANEL'
 return config
