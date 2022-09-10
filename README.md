@@ -78,7 +78,7 @@ docker run -td -p 8081:8081 -p 1900:1900/udp schwark/stproxy
 
 4. Enter username and password for Alarm.com. 
 
-5. OPTIONAL: You can also add the IP address of the proxy **if using the Docker proxy installation** as sometimes SSDP does not automatically discover the proxy when running in a docker container.
+5. OPTIONAL: You can also manually add the IP address of the proxy **if using the Docker proxy installation** as sometimes the proxy is not automatically discovered when the proxy is running in a docker container.
 
 6. OPTIONAL: You can turn on Add Sensors options if you want a SmartThings Contact Sensor added for each of the door/window sensors of your alarm
 
