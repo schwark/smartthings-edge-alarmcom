@@ -56,7 +56,7 @@ supervisorctl stop stproxy
 Install docker on your [preferred platform](https://docs.docker.com/get-docker/)
 
 ```
-docker run -td -p 8081:8081 -p 1900:1900/udp schwark/stproxy
+docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
 ```
 
 ## Driver Installation
