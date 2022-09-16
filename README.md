@@ -62,7 +62,7 @@ sudo usermod -aG docker ${USER}
 sudo systemctl enable docker
 ```
 
-After docker is installed, run the following to run the proxy
+After docker is installed, reboot and run the following to run the proxy
 
 ```
 docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
