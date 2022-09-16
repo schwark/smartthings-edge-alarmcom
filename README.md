@@ -53,7 +53,16 @@ supervisorctl stop stproxy
 ```
 
 ## Proxy Installation (Docker)
-Install docker on your [preferred platform](https://docs.docker.com/get-docker/)
+Install docker on your [preferred platform](https://docs.docker.com/get-docker/) or on most unix based platforms like raspberry pi by running 
+
+```
+sudo apt-get update && sudo apt-get full-upgrade
+curl -sSL https://get.docker.com | sh
+sudo usermod -aG docker ${USER}
+sudo systemctl enable docker
+```
+
+After docker is installed, run the following to run the proxy
 
 ```
 docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
