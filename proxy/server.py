@@ -24,6 +24,11 @@ import socket
 import argparse, requests
 import threading
 
+def merge_dicts(x, y):
+    z = x.copy()   # start with keys and values of x
+    z.update(y)    # modifies z with keys and values of y
+    return z
+
 class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.0'
     supported_servers = ['www.alarm.com']
@@ -44,7 +49,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             empty, first, rest = self.path.split('/',2)
             hostname = self.get_server(int(first))
             url = 'https://{}{}'.format(hostname, '/'+rest)
-            req_header = (self.parse_headers() | self.get_base_headers(hostname))
+            req_header = merge_dicts(self.parse_headers(), self.get_base_headers(hostname))
 
             log.debug("========start-get========")
             #log.debug("header: %s", req_header)
@@ -71,7 +76,7 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
             url = 'https://{}{}'.format(hostname, '/'+rest)
             content_len = int(self.headers.get('content-length', 0))
             post_body = self.rfile.read(content_len)
-            req_header = (self.parse_headers() | self.get_base_headers(hostname))
+            req_header = merge_dicts(self.parse_headers(), self.get_base_headers(hostname))
 
             log.debug("========start-post========")
             #log.debug("header: %s", req_header)
