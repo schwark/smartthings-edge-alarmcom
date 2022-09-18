@@ -6,9 +6,21 @@ When someday access to alarm.com will work directly from the driver, the same dr
 
 The rest of this README is instructions on how to get the proxy based integration working.
 
-There are two ways to install the proxy - one without docker (non-docker), which is a little more involved. Or you can install docker and run the docker container (simpler). You do EITHER the Non-Docker steps or the Docker step - not both.
+There are three ways to install the proxy - preferred is to just download an executable and run it. However, it is also possible to run it as a python script if you do not want to run an executable - one without docker (non-docker), which is a little more involved. Or you can install docker and run the docker container (simpler). You do **ONLY ONE** of the Executable, Non-Docker Python or the Docker Python - not all of them.
 
-## Python Installation (Non-Docker)
+
+## Proxy Installation (Preferred: Executable)
+
+Download the [appropriate release](https://github.com/schwark/stproxy) of the stproxy and run it. See the README on the page to decide which executable you need. To run it.. 
+
+```
+stproxy-<os>-<arch>
+```
+
+
+## Proxy Installation (Non-Docker Python)
+
+### Python Installation 
 
 **On a raspberry pi, or other Linux machine**
 
@@ -31,8 +43,9 @@ brew install python
 
 Download from [Python Download](https://www.python.org/downloads/) page and install
 
+That takes care of installing python..
 
-## Proxy Installation (Non-Docker)
+### Proxy Code Installation
 
 Download this code repo as a [zip file](https://github.com/schwark/smartthings-edge-alarmcom/archive/refs/heads/main.zip)
 
@@ -52,7 +65,7 @@ To stop the proxy
 supervisorctl stop stproxy
 ```
 
-## Proxy Installation (Docker)
+## Proxy Installation (Docker Python)
 Install docker on your [preferred platform](https://docs.docker.com/get-docker/) or on most unix based platforms like raspberry pi by running 
 
 ```
@@ -67,6 +80,7 @@ After docker is installed, reboot and run the following to run the proxy
 ```
 docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
 ```
+
 
 ## Driver Installation
 
