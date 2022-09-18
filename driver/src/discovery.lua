@@ -7,7 +7,7 @@ local discovery = {}
 
 local function create_panel(driver, device)
   log.info('===== creating Panel...')
-  log.info('===== panel destination: '..device.location)
+  log.info('===== panel destination: '..(device.location or "nil"))
   local network_id = config.ALARM_ID
   local usn = device.usn or network_id
   -- device metadata table
