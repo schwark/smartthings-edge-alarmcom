@@ -38,11 +38,24 @@ local function parse_ssdp(data)
     -- broadcasting request
     log.info('===== scanning network...')
     upnp:sendto(config.MSEARCH, config.MC_ADDRESS, config.MC_PORT)
-  
-    -- Socket will wait n seconds
-    -- based on the s:setoption(n)
-    -- to receive a response back.
-    local res, ip = upnp:receivefrom()
+    local ip = nil
+    local res = nil
+
+    repeat
+        -- Socket will wait n seconds
+        -- based on the s:setoption(n)
+        -- to receive a response back.
+        res, ip = upnp:receivefrom()
+        log.debug("got a response from "..(ip or "nil"))
+        local device_res = parse_ssdp(res)
+        if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
+            res = device_res
+        else
+            if "timeout" ~= ip then
+                ip = nil
+            end
+        end
+    until ip
   
     -- close udp socket
     upnp:close()
@@ -67,7 +80,6 @@ local function parse_ssdp(data)
     local usn = nil
     local device_res, ip = find_device()
     if device_res ~= nil then
-      device_res = parse_ssdp(device_res)
       log.info(utils.stringify_table(device_res, "device_res"))
     end
     if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
