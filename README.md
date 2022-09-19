@@ -9,7 +9,7 @@ The rest of this README is instructions on how to get the proxy based integratio
 There are three ways to install the proxy - preferred is to just download an executable and run it. However, it is also possible to run it as a python script if you do not want to run an executable - one without docker (non-docker), which is a little more involved. Or you can install docker and run the docker container (simpler). You do **ONLY ONE** of the Executable, Non-Docker Python or the Docker Python - not all of them.
 
 
-## Proxy Installation (Preferred: Executable)
+## Preferred Proxy Installation (Platform Specific Executable)
 
 Download the [appropriate release](https://github.com/schwark/stproxy) of the stproxy and run it. See the README on the page to decide which executable you need. To run it.. 
 
@@ -18,7 +18,24 @@ stproxy-<os>-<arch>
 ```
 
 
-## Proxy Installation (Non-Docker Python)
+## Alternative #2: Proxy Installation (Docker Python)
+Install docker on your [preferred platform](https://docs.docker.com/get-docker/) or on most unix based platforms like raspberry pi by running 
+
+```
+sudo apt-get update && sudo apt-get full-upgrade
+curl -sSL https://get.docker.com | sh
+sudo usermod -aG docker ${USER}
+sudo systemctl enable docker
+```
+
+After docker is installed, reboot and run the following to run the proxy
+
+```
+docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
+```
+
+
+## Alternative #3: Proxy Installation (Non-Docker Python)
 
 ### Python Installation 
 
@@ -63,22 +80,6 @@ To stop the proxy
 
 ```
 supervisorctl stop stproxy
-```
-
-## Proxy Installation (Docker Python)
-Install docker on your [preferred platform](https://docs.docker.com/get-docker/) or on most unix based platforms like raspberry pi by running 
-
-```
-sudo apt-get update && sudo apt-get full-upgrade
-curl -sSL https://get.docker.com | sh
-sudo usermod -aG docker ${USER}
-sudo systemctl enable docker
-```
-
-After docker is installed, reboot and run the following to run the proxy
-
-```
-docker run -td -p 8081:8081 -p 1900:1900/udp --net=host schwark/stproxy
 ```
 
 
