@@ -44,7 +44,8 @@ function discovery.start(driver, opts, cons)
     local panel_device = commands.get_panel_device(driver)
     if nil == panel_device then
       -- create the alarm panel
-      local ip_port, usn = commands.get_device_details()
+      local ip, port, usn = commands.find_device()
+      local ip_port = ip and port and ip..':'..port or nil
 
       if ip_port ~= nil then
         log.info('===== proxy found on network: '..ip_port)

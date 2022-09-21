@@ -17,7 +17,9 @@ config.MSEARCH=table.concat({
   'HOST: 239.255.255.250:1900',
   'MAN: "ssdp:discover"',
   'MX: 4',
-  'ST: '..config.URN
+  'ST: '..config.URN,
+  '',
+  ''
 }, '\r\n')
 config.SCHEDULE_PERIOD=300
 config.ALARM_ID='ALARMCOMPROXYPANEL'

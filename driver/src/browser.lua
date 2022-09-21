@@ -125,6 +125,9 @@ end
 
 function M:make_absolute(base_url, url)
     local result = url
+    if(url:match(self.proxy)) then  -- something is messed up
+        url = url:gsub('https?://'..self.proxy,'')
+    end
     if not url:match('^http') then -- not absolute url 
         if '/' == url:sub(1,1) then -- not relative path
             local protocol, domain, path = base_url:match('(https?)://([^/]+)(.*)')
@@ -135,7 +138,11 @@ function M:make_absolute(base_url, url)
             end
             result = protocol..'://'..domain..url
         else
-            result = base_url:gsub('[^/]*$',url)
+            if(url:match('^%?')) then -- only adding query string
+                result = base_url + url
+            else
+                result = base_url:gsub('[^/]*$',url)
+            end
         end
     end
     log.debug("absolute url for "..url.." is "..result)

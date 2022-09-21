@@ -17,7 +17,14 @@ local function constructor(self,o)
 end
 setmetatable(M, {__call = constructor})
 
+local function is_empty(var)
+    return not var or "" == var or var:match('userdata:')
+end
+
 function M:login()
+    if is_empty(self.username) or is_empty(self.password) then 
+        return nil
+    end
     log.info("logging in...")
     local response, code
     local browser = self.browser
@@ -53,6 +60,7 @@ function M:init()
     local browser = self.browser
     local user_id, system_id
     code = self:login()
+    if not code then return false end
     if "timeout" ~= tostring(code) and type(code) ~= "string" and code < 300 then
         local headers = {AjaxRequestUniqueKey = browser:cookie('afg'), Accept = "application/vnd.api+json"}
         response, code = browser:request({ url = "https://www.alarm.com/web/api/identities", headers = headers} )                
@@ -76,8 +84,8 @@ end
 
 function M:command(params)
     local params = params or {}
-    if not self.panel_id then
-        self:init()
+    if not self.panel_id and not self:init() then
+        return nil
     end
     local response, code, headers
     local browser = self.browser
@@ -135,8 +143,8 @@ end
 function M:get_state()
     log.info("getting panel state...")
     local result = nil
-    if not self.panel_id then
-        self:init()
+    if not self.panel_id and not self:init() then
+        return nil
     end
     local response, code, headers
     local browser = self.browser

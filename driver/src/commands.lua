@@ -15,6 +15,7 @@ local switch_states = {
 
 -- SSDP Response parser
 local function parse_ssdp(data)
+    if not data then return nil end
     log.info("ssdp response:\n"..data)
     local res = {}
     res.status = data:sub(0, data:find('\r\n'))
@@ -24,11 +25,22 @@ local function parse_ssdp(data)
     return res
   end
   
+  local function is_my_device(device_res)
+    if device_res ~= nil then
+        local field = 'st'
+        if device_res.nt then field = 'nt' end
+        if device_res[field] ~= nil and device_res[field]:match(config.URN) then
+            return true
+        end   
+    end
+    return false
+  end
+
   -- This function enables a UDP
   -- Socket and broadcast a single
   -- M-SEARCH request, i.e., it
   -- must be looped appart.
-  local function find_device()
+  function command_handlers.find_device()
     -- UDP socket initialization
     local upnp = socket.udp()
     upnp:setsockname('*', 0)
@@ -37,9 +49,12 @@ local function parse_ssdp(data)
   
     -- broadcasting request
     log.info('===== scanning network...')
+    log.debug('sending.. '..config.MSEARCH)
     upnp:sendto(config.MSEARCH, config.MC_ADDRESS, config.MC_PORT)
     local ip = nil
     local res = nil
+    local port = nil
+    local usn = nil
 
     repeat
         -- Socket will wait n seconds
@@ -47,9 +62,13 @@ local function parse_ssdp(data)
         -- to receive a response back.
         res, ip = upnp:receivefrom()
         log.debug("got a response from "..(ip or "nil"))
-        local device_res = parse_ssdp(res)
-        if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
-            res = device_res
+        local device_res = res and parse_ssdp(res) or nil
+        log.debug(res and utils.stringify_table(device_res) or "nil")
+
+        if is_my_device(device_res) then
+            port = device_res.location:match('http://[^:/]+:(%d+)')
+            usn = device_res.usn
+            log.info("SSDP found a proxy at "..ip..":"..port)
         else
             if "timeout" ~= ip then
                 ip = nil
@@ -60,7 +79,7 @@ local function parse_ssdp(data)
     -- close udp socket
     upnp:close()
   
-    return res, ip
+    return ip, port, usn
   end
   
   function command_handlers.get_panel_device(driver)
@@ -75,23 +94,6 @@ local function parse_ssdp(data)
     return result
   end
   
-  function command_handlers.get_device_details()
-    local ip_port = nil
-    local usn = nil
-    local device_res, ip = find_device()
-    if device_res ~= nil then
-      log.info(utils.stringify_table(device_res, "device_res"))
-    end
-    if device_res ~= nil and device_res.nt ~= nil and device_res.nt == config.URN then
-      local domain, port = device_res.location:match('http://([^:/]+):(%d+)')
-      usn = device_res.usn
-      ip_port = ip..':'..port
-      log.info("SSDP found a proxy at "..ip_port)
-    end
-    return ip_port, usn
-  end
-  
-
 function command_handlers.get_panel(device)
     local panel = device:get_field("panel")
     if not panel then
@@ -100,7 +102,8 @@ function command_handlers.get_panel(device)
             log.info("initializing proxy from preferences...")
             ip_port = device.preferences.proxyip..':'..(device.preferences.proxyport or '8081')
         else
-            ip_port = command_handlers.get_device_details()
+            local ip, port, usn = command_handlers.find_device()
+            ip_port = ip and port and ip..':'..port or nil
         end
         if ip_port ~= nil then
             log.info("initializing panel with "..ip_port)
@@ -112,9 +115,11 @@ function command_handlers.get_panel(device)
             end
         end
     end
-    if(panel and ((not panel.username or "" == panel.username) or (not panel.password or "" == panel.username))) then
-        panel.username = device.preferences.username
-        panel.password = device.preferences.password
+    local pref_username = tostring(device.preferences.username)
+    local pref_password = tostring(device.preferences.password)
+    if(panel and (panel.username ~= pref_username or panel.password ~= pref_password)) then
+        panel.username = pref_username
+        panel.password = pref_password
     end
     return panel
 end
