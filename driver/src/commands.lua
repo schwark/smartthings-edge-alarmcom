@@ -46,7 +46,8 @@ local function parse_ssdp(data)
     upnp:setsockname('*', 0)
     upnp:setoption('broadcast', true)
     upnp:settimeout(config.MC_TIMEOUT)
-  
+    upnp:setoption('ip-add-membership', {multiaddr = config.MC_ADDRESS, interface = '0.0.0.0'})
+    
     -- broadcasting request
     log.info('===== scanning network...')
     log.debug('sending.. '..config.MSEARCH)
