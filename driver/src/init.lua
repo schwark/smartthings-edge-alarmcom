@@ -12,7 +12,7 @@ local driver = Driver("Alarm.com driver", {
     supported_capabilities = {
         capabilities.switch,
         capabilities.securitySystem,
-        capabilities.healthCheck,
+        --capabilities.healthCheck,
         capabilities.refresh
     },    
     capability_handlers = {
@@ -28,9 +28,11 @@ local driver = Driver("Alarm.com driver", {
       [capabilities.refresh.ID] = {
         [capabilities.refresh.commands.refresh.NAME] = commands.handle_refresh,
       },
+      --[[
       [capabilities.healthCheck.ID] = {
         [capabilities.healthCheck.commands.ping.NAME] = commands.handle_refresh,
       },
+      --]]
     }
   })
 

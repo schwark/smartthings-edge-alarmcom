@@ -8,8 +8,6 @@ components:
         version: 1
       - id: refresh
         version: 1
-      - id: healthCheck
-        version: 1
     categories:
       - name: SecurityPanel
 preferences:
@@ -64,3 +62,10 @@ preferences:
     preferenceType: boolean
     definition: 
       default: false
+  - title: "Refresh Status every n seconds"
+    name: poll
+    description: "Poll every n seconds - 0 to disable"
+    required: false
+    preferenceType: integer
+    definition: 
+      default: 300
