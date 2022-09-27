@@ -12,9 +12,10 @@ local function cancel_timers(driver, device)
 end
 
 local function setup_polling(driver, device)
+  if(device.model ~= config.PANEL_MODEL) then return end
   local poll = device.preferences.poll or config.SCHEDULE_PERIOD
-  if(device.model ~= config.PANEL_MODEL) or 0 == poll then return end
   cancel_timers(driver, device)
+  if 0 == poll then return true end
   log.info('setting up refresh timer every '..poll..' seconds')
   -- Refresh schedule
   device.thread:call_on_schedule(
