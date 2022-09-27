@@ -216,9 +216,9 @@ function M:request(args)
             else
                 if response_list then
                     if rheaders['content-type']:match('json')  then
-                        log.debug("decoding json response "..temp_response)
+                        --log.debug("decoding json response "..temp_response)
                         response = json.decode(temp_response)
-                        log.debug("got json object "..json.encode(response))
+                        --log.debug("got json object "..json.encode(response))
                     else
                         self.referer = url
                         response = temp_response
