@@ -2,9 +2,9 @@ name: AlarmComSecuritySystem.vPx
 components:
   - id: main
     capabilities:
-      - id: securitySystem
-        version: 1
       - id: switch
+        version: 1
+      - id: securitySystem
         version: 1
       - id: refresh
         version: 1
